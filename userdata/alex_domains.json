@@ -1,0 +1,98 @@
+[
+    {
+        "domain": "example.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "failed",
+        "ssl_Issuer": "[Errno 11001] getaddrinfo failed"
+    },
+    {
+        "domain": "twitter.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-09-29 23:59:59",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "facebook.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2024-11-25 23:59:59",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "youtube.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-01-13 08:36:56",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "googletagmanager.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-01-13 08:36:56",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "linkedin.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "failed",
+        "ssl_Issuer": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1020)"
+    },
+    {
+        "domain": "google.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-01-13 08:36:56",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "apple.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-02-12 20:09:50",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "instagram.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2024-11-25 23:59:59",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "wikipedia.org",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-10-17 23:59:59",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "github.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-03-07 23:59:59",
+        "ssl_Issuer": "GB"
+    },
+    {
+        "domain": "youtu.be",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-01-13 08:36:56",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "play.google.com",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-01-13 08:36:56",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "en.wikipedia.org",
+        "status_code": "FAILED",
+        "ssl_expiration": "2025-10-17 23:59:59",
+        "ssl_Issuer": "US"
+    },
+    {
+        "domain": "wordpress.org",
+        "status_code": "FAILED",
+        "ssl_expiration": "2024-12-31 23:59:59",
+        "ssl_Issuer": "GB"
+    },
+    {
+        "domain": "microsoft.com",
+        "status_code": "OK",
+        "ssl_expiration": "2025-04-22 15:47:07",
+        "ssl_Issuer": "US"
+    }
+]
