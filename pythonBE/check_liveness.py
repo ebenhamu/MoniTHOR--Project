@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 import json
 import concurrent.futures
@@ -5,36 +6,49 @@ from queue import Queue
 import time
 from pythonBE import check_certificate 
 import os
+from pythonBE.logs import logger
+
+# livness and ssl info function , for single domain file "all=False" , for domains file "all=True"
+# function will read Domain/Domains file and will update relevant fields in file 
+# 'domain','status_code',"ssl_expiration","ssl_Issuer" 
 
 def livness_check (username):
     # Measure start time
-    start_time = time.time()
-
+    now = datetime.now() # Format the date and time in a friendly way 
+    start_date_time = now.strftime("%H:%M  %d/%m/%y ")
+    start_time = time.time()    
     urls_queue = Queue()
     analyzed_urls_queue = Queue()
-
-    if not os.path.exists(f'./userdata/{username}_domains.json'):
+    
+    fileToCheck=f'./userdata/{username}_domains.json'
+    
+    if not os.path.exists(fileToCheck):
         return "Domains file is not exist"
         
-    with open(f'./userdata/{username}_domains.json', 'r') as f:
+    with open(fileToCheck, 'r') as f:
         currentListOfDomains=list(json.load(f))       
      
     for d in currentListOfDomains :        
         urls_queue.put(d['domain']) 
-            
-
-    print(f"Total URLs to check: {urls_queue.qsize()}")
+         
+    numberOfDomains=urls_queue.qsize()
+    logger.info(f"Total URLs to check: {numberOfDomains}")
 
     # Define the URL checking function with a timeout and result storage
     def check_url():
         while not urls_queue.empty():
             url = urls_queue.get()
-            certInfo= check_certificate.check_cert(url) 
-            result = {'domain': url, 'status_code': 'FAILED' ,"ssl_expiration":certInfo[0],"ssl_Issuer": certInfo[1]}  # Default to FAILED
+            
+            
+            
+            #print(certInfo)
+            result = {'domain': url, 'status_code': 'FAILED' ,"ssl_expiration":'FAILED',"ssl_Issuer": 'FAILED' }  # Default to FAILED
             try:
                 response = requests.get(f'http://{url}', timeout=1)
-                if response.status_code == 200:
-                    result['status_code'] = 'OK'
+                logger.info(f"URL To Check:{url}")
+                if response.status_code == 200:                    
+                    certInfo=check_certificate.certificate_check(url) 
+                    result = {'domain': url, 'status_code': 'OK' ,"ssl_expiration":certInfo[0],"ssl_Issuer": certInfo[1][:30]}  # Default to FAILED
             except requests.exceptions.RequestException:
                 result['status_code'] = 'FAILED'
             finally:
@@ -52,14 +66,14 @@ def livness_check (username):
             analyzed_urls_queue.task_done()
 
         # Write results to JSON file
-        with open(f'./userdata/{username}_domains.json', 'w') as outfile:
+        with open(fileToCheck, 'w') as outfile:
             json.dump(results, outfile, indent=4)
-        print("Report generated in report.json")
+        logger.info("Report generated in doamins.json")
 
     # Run URL checks in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as liveness_threads_pool:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as liveness_threads_pool:
         # Submit URL check tasks
-        futures = [liveness_threads_pool.submit(check_url) for _ in range(20)]
+        futures = [liveness_threads_pool.submit(check_url) for _ in range(100)]
         # Generate report after tasks complete
         liveness_threads_pool.submit(generate_report)
 
@@ -69,8 +83,8 @@ def livness_check (username):
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    print(f"URL liveness check complete in {elapsed_time:.2f} seconds.")
+    logger.debug(f"URL liveness check complete in {elapsed_time:.2f} seconds.")
     with open(f'./userdata/{username}_domains.json', 'r') as f:
         results = json.load(f)
-    return results
+    return start_date_time,str(numberOfDomains)
 

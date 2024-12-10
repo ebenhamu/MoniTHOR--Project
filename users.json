@@ -18,6 +18,67 @@
     {
         "username": "may",
         "password": "elbaz"
+    },
+    {
+        "username": "may1",
+        "password": "elbaz1"
+    },
+    {
+        "username": "elib1",
+        "password": "elib1"
+    },
+    {
+        "username": "may2",
+        "password": "elbaz"
+    },
+    {
+        "username": "elbaz",
+        "password": "12345"
+    },
+    {
+        "username": "may.elbaz12@gmail.com"
+    },
+    {
+        "username": "may.elbaz96@gmail.com"
+    },
+    {
+        "username": "tester2a",
+        "password": "tester2a"
+    },
+    {
+        "username": "tester1a",
+        "password": "tester1a"
+    },
+    {
+        "username": "tester0a",
+        "password": "tester0a"
+    },
+    {
+        "username": "tester3a",
+        "password": "tester3a"
+    },
+    {
+        "username": "tester4a",
+        "password": "tester4a"
+    },
+    {
+        "username": "tester5a",
+        "password": "tester5a"
+    },
+    {
+        "username": "tester6a",
+        "password": "tester6a"
+    },
+    {
+        "username": "tester7a",
+        "password": "tester7a"
+    },
+    {
+        "username": "tester8a",
+        "password": "tester8a"
+    },
+    {
+        "username": "tester9a",
+        "password": "tester9a"
     }
-
 ]

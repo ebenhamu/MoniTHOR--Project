@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template,render_template_string,redirect,request, url_for
+from flask import Flask, session, render_template,redirect,request, url_for
 import requests
 from oauthlib.oauth2 import WebApplicationClient
 from pythonBE import user , check_liveness ,domain
@@ -11,8 +11,8 @@ from apscheduler.triggers.date import DateTrigger
 import pytz
 import uuid
 from datetime import datetime 
-import threading 
 import time
+import threading
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,6 +21,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)  # __name__ helps Flask locate resources and configurations
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+app.config['UPLOAD_FOLDER'] = 'uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Global parmeters to keep last job info.
 global globalInfo 
@@ -39,20 +41,6 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 
 scheduled_jobs = [] # Store scheduled jobs
-
-
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return 'No file part'
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
-    if file:
-        file.save('./upload/' + file.filename)
-        return 'File successfully uploaded'
 
 # Route for Job schedule 
 @app.route('/schedule_bulk_monitoring', methods=['POST'])
@@ -184,7 +172,6 @@ def login():
 @app.route('/dashboard', methods=['GET'])
 def main():
     user_file = f'./userdata/{session['user']}_domains.json'
-    globalInfo['runInfo']=['--:--  --/--/-- ', '-']
     if os.path.exists(user_file):
      with open(user_file, 'r') as f:
           data = json.load(f)
@@ -197,7 +184,6 @@ def main():
     
     failuresCount = sum(1 for item in data if item.get('status_code') == 'FAILED' )    
     if len(all_domains)>0 :
-        
         failuresPrecent=  round (float(float(failuresCount)/float(len(all_domains)))*100,1)
     else:
         failuresPrecent=0
@@ -320,8 +306,7 @@ def remove_domain(domainName):
 @app.route('/bulk_upload/<filename>')
 def add_from_file(filename):    
     if session['user']=="" :
-        return "No User is logged in"         
-    print(filename)  
+        return "No User is logged in"           
     logger.info(f"File:{filename}")
     return domain.add_bulk(session['user'],filename)
     
@@ -334,10 +319,25 @@ def check_livness(username):
     globalInfo["runInfo"]=check_liveness.livness_check (username)        
     return globalInfo["runInfo"]
     
-@app.route('/user')
-def get_user():           
-    return session['user']
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return 'No file part'
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file'
+    if file:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(filepath)
+        add_from_file(filepath)
+        if os.path.exists(filepath): 
+            os.remove(filepath)
+               
+        
+        return {'message':'File successfully uploaded','file': filepath }
     
+
+
 
 
 @app.route('/test/<numberOfUsers>')
@@ -346,7 +346,8 @@ def check_livness_test(numberOfUsers):
     start_date_time = now.strftime("%H:%M  %d/%m/%y ")
     start_time = time.time() 
     threads = []
-    
+    for i in range(int(numberOfUsers)):
+         registerTesterAndLoadData(i)
     for i in range(int(numberOfUsers)): 
         thread = threading.Thread(target=runTset, args=(i,)) 
         threads.append(thread) 
@@ -366,24 +367,24 @@ def check_livness_test(numberOfUsers):
 
 
 
-def runTset(testId):       
-    username="tester"+str(testId)+"a"
-    user.register_user(username,username,username)
-    user.login_user(username,username)        
+def registerTesterAndLoadData(testerId):       
+    username="tester"+str(testerId)+"a"
+    user.register_user(username,username,username)              
+    return domain.add_bulk(username,"./userdata/Domains_for_upload_100.txt")    
+
+def runTset(testerId):       
+    username="tester"+str(testerId)+"a"    
     domain.add_bulk(username,"./userdata/Domains_for_upload_100.txt")
     globalInfo["runInfo"]=check_liveness.livness_check (username)                   
     return globalInfo["runInfo"]  
-   
-   
 
-    
-
+   
 
 def Checkjob(username):    
     globalInfo["runInfo"]=check_liveness.livness_check (username)
-    return redirect('/results')
+    redirect('/results')
+    return  globalInfo["runInfo"]
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=False)
-        
+    app.run(host='0.0.0.0', port=8080, debug=True)
     

@@ -30,7 +30,8 @@
         <div class="collapse navbar-collapse" id="navbar">
           <div class="navbar-nav">
             {% if session['user'] %}
-            <a class="nav-item nav-link" id="dashboard" href="/0">{{ session['user'] }}'s Dashboard</a>
+            <a class="nav-item nav-link" id="dashboard" href="/dashboard">{{ session['user'] }}'s Dashboard</a>
+            <a class="nav-item nav-link" id="results" href="/results">{{ session['user'] }}'s Results</a>
             <a class="nav-item nav-link" id="logoff" href="/logoff">Logoff</a>
             {% else %}
             <a class="nav-item nav-link" id="login" href="/login">Login</a>
@@ -39,6 +40,7 @@
           </div>
         </div>
     </nav>
+    <br />
     <h1>MoniTHOR! - Domains Monitoring App</h1>
     <br />
     <div class="content">{% block content %} {% endblock %}</div>
@@ -59,5 +61,6 @@
     ></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='register.js') }}"></script>
 </body>
 </html>
